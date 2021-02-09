@@ -9,8 +9,8 @@
     <ProjectGuid>{C491FCEF-8215-49C9-A42D-400F6594F660}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MonoGameWindowsStarter</RootNamespace>
-    <AssemblyName>MonoGameWindowsStarter</AssemblyName>
+    <RootNamespace>ProjectRhythm</RootNamespace>
+    <AssemblyName>ProjectRhythm</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -42,6 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Game.cs" />
+    <Compile Include="GameStates\IGameState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

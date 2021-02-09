@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ProjectRhythm.GameStates;
 
 namespace ProjectRhythm
 {
@@ -40,7 +41,11 @@ namespace ProjectRhythm
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            // Create a new SpriteBatch, which can be used to draw textures.
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            GameStateManager.Instance.SetContent(Content);
+
+            GameStateManager.Instance.AddScreen(new RhythmGame(GraphicsDevice));
         }
 
         /// <summary>
@@ -50,6 +55,7 @@ namespace ProjectRhythm
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            GameStateManager.Instance.UnloadContent();
         }
 
         /// <summary>
@@ -64,6 +70,8 @@ namespace ProjectRhythm
 
             // TODO: Add your update logic here
 
+            GameStateManager.Instance.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -75,7 +83,7 @@ namespace ProjectRhythm
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            GameStateManager.Instance.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }

@@ -54,7 +54,9 @@ namespace ProjectRhythm.GameStates
                     _screens.Peek().LoadContent(_content);
                 }
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
                 // Log the exception
             }
@@ -70,7 +72,9 @@ namespace ProjectRhythm.GameStates
                     var screen = _screens.Peek();
                     _screens.Pop();
                 }
+#pragma warning disable CS0168 // Variable is declared but never used
                 catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
                 {
                     // Log the exception
                 }
@@ -94,7 +98,9 @@ namespace ProjectRhythm.GameStates
                 ClearScreens();
                 AddScreen(screen);
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
                 // Log the exception
             }
@@ -110,7 +116,9 @@ namespace ProjectRhythm.GameStates
                     _screens.Peek().Update(gameTime);
                 }
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
 
             }
@@ -126,7 +134,9 @@ namespace ProjectRhythm.GameStates
                     _screens.Peek().Draw(spriteBatch);
                 }
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
                 
             }

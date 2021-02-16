@@ -12,10 +12,12 @@ namespace ProjectRhythm.GameStates
     public abstract class GameState : IGameState
     {
         protected GraphicsDevice _graphicsDevice;
+        protected Game _game;
 
-        public GameState(GraphicsDevice graphicsDevice)
+        public GameState(GraphicsDevice graphicsDevice, Game g)
         {
             _graphicsDevice = graphicsDevice;
+            _game = g;
         }
 
         public abstract void Initialize();

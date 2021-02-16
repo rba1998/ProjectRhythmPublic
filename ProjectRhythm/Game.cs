@@ -16,6 +16,10 @@ namespace ProjectRhythm
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.IsFullScreen = true;
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1080;
+
             Content.RootDirectory = "Content";
         }
 
@@ -45,7 +49,7 @@ namespace ProjectRhythm
             spriteBatch = new SpriteBatch(GraphicsDevice);
             GameStateManager.Instance.SetContent(Content);
 
-            GameStateManager.Instance.AddScreen(new RhythmGame(GraphicsDevice));
+            GameStateManager.Instance.AddScreen( new RhythmGame( GraphicsDevice, this ) );
         }
 
         /// <summary>
@@ -81,8 +85,6 @@ namespace ProjectRhythm
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
             GameStateManager.Instance.Draw(spriteBatch);
 
             base.Draw(gameTime);

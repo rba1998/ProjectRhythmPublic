@@ -10,7 +10,7 @@ namespace ProjectRhythm
     /// </summary>
     public class Game : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
+        public GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
         public Game()
@@ -49,7 +49,7 @@ namespace ProjectRhythm
             spriteBatch = new SpriteBatch(GraphicsDevice);
             GameStateManager.Instance.SetContent(Content);
 
-            GameStateManager.Instance.AddScreen( new RhythmGame( GraphicsDevice, this ) );
+            GameStateManager.Instance.AddScreen( new RhythmGame( GraphicsDevice, this, "Freedom Dive" ) );
         }
 
         /// <summary>

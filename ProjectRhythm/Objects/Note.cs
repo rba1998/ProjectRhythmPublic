@@ -19,6 +19,8 @@ namespace ProjectRhythm.Objects
         float bpm;
         float notespeed;
 
+        public UInt64 hitframe;
+
         /// <summary>
         /// A single-tap, basic note. Starts just above the screen, and scrolls down toward the judgement line.
         /// </summary>
@@ -26,11 +28,12 @@ namespace ProjectRhythm.Objects
         /// <param name="rg"> RhythmGame instance in which the note is placed. </param>
         /// <param name="t"> Texture to be used by the note. </param>
         /// <param name="b"> BPM at which this note will hit (used to calculate travel speed). </param>
-        public Note( Game g, RhythmGame rg, Texture2D t, float b )
+        public Note( Game g, RhythmGame rg, Texture2D t, float b, UInt64 hf )
         {
             game = g;
             rhythmgame = rg;
             texture = t;
+            hitframe = hf;
             Bounds.Width = 117;
             Bounds.Height = 30;
             Bounds.X = 960;

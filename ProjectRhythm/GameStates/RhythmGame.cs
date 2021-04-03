@@ -47,12 +47,14 @@ namespace ProjectRhythm.GameStates
 
         /**** Debug Variables ****/
         bool enableMetronome;
+        string linetest;
 
         public RhythmGame( GraphicsDevice graphicsDevice, Game g, String s ) : base( graphicsDevice, g )
         {
             this.graphicsDevice = graphicsDevice;
             game = g;
             mapname = s;
+            linetest = "Nope";
 
             try
             {
@@ -70,12 +72,6 @@ namespace ProjectRhythm.GameStates
 
                 line = file.ReadLine(); // Offset
                 offset = float.Parse( line );
-
-                // Read in rest of the notes
-                while ((line = file.ReadLine()) != null)
-                {
-                    splitline = line.Split( ';' );
-                }
 
                 framecount = 0;
             }
@@ -120,7 +116,8 @@ namespace ProjectRhythm.GameStates
             /**** Further Initialization of game objects ****/
             overlay = new Overlay( game, this, txtOverlay );
 
-            listnote.Add( new Note( game, this, txtNote, bpm ) );
+            //listnote.Add( new Note( game, this, txtNote, bpm ) );
+            ReadFile();
 
             MediaPlayer.Play( song );
         }
@@ -179,9 +176,48 @@ namespace ProjectRhythm.GameStates
             spriteBatch.DrawString( fontJetset, "Beats Per Sec = " + beatsPerSec.ToString(), new Vector2( 10, 90 ), Color.White );
             spriteBatch.DrawString( fontJetset, "Frames Per Beat = " + framesPerBeat.ToString(), new Vector2( 10, 110 ), Color.White );
             spriteBatch.DrawString( fontJetset, "Song name = " + songname, new Vector2( 10, 130 ), Color.White );
+            spriteBatch.DrawString( fontJetset, "Line 4 = " + linetest, new Vector2( 10, 150 ), Color.White );
 
             // Draw sprites here
             spriteBatch.End();
+        }
+
+        private void ReadFile()
+        {
+            try
+            {
+                file = new System.IO.StreamReader(@"Maps/" + mapname + ".txt");
+                string line;
+                string[] splitline;
+
+                // Skip first 3 lines
+                file.ReadLine();
+                file.ReadLine();
+                file.ReadLine();
+
+                // Read in rest of the notes
+                while ((line = file.ReadLine()) != null)
+                {
+                    linetest = line;
+                    splitline = line.Split(';');
+
+                    UInt64 hitframe = Convert.ToUInt64(splitline[1]) + Convert.ToUInt64(offset);
+
+                    // Note type
+                    switch (splitline[0])
+                    {
+                        case "N":
+                        default:
+                            Note note = new Note(game, this, txtNote, bpm, hitframe);
+                            listnote.Add(note);
+                            break;
+                    }
+                }
+            }
+            catch( Exception ex )
+            {
+                game.Exit();
+            }
         }
     }
 }

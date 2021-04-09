@@ -11,14 +11,19 @@ namespace ProjectRhythm.Objects
 {
     public class Note
     {
-        Game game;
-        RhythmGame rhythmgame;
+        private Game game;
+        private RhythmGame rhythmgame;
         public BoundingRectangle Bounds;
-        Texture2D texture;
+        private Texture2D texture;
 
-        float bpm;
-        float notespeed;
+        private float bpm;
+        public float notespeed;
+        private int yCoordStart;
+        private int yCoordHit;
+        public float yCoordTravel;
+        public bool active;
 
+        public UInt64 spawnframe;
         public UInt64 hitframe;
 
         /// <summary>
@@ -28,7 +33,7 @@ namespace ProjectRhythm.Objects
         /// <param name="rg"> RhythmGame instance in which the note is placed. </param>
         /// <param name="t"> Texture to be used by the note. </param>
         /// <param name="b"> BPM at which this note will hit (used to calculate travel speed). </param>
-        public Note( Game g, RhythmGame rg, Texture2D t, float b, UInt64 hf )
+        public Note( Game g, RhythmGame rg, Texture2D t, float b, UInt64 hf, int pos )
         {
             game = g;
             rhythmgame = rg;
@@ -36,19 +41,61 @@ namespace ProjectRhythm.Objects
             hitframe = hf;
             Bounds.Width = 117;
             Bounds.Height = 30;
-            Bounds.X = 960;
             Bounds.Y = 0 - Bounds.Height;
 
+            // Place note at correct X-coordinate based on passed-in position flag
+            switch( pos )
+            {
+                case 1:
+                default:
+                    Bounds.X = 607;
+                    break;
+                case 2:
+                    Bounds.X = 724;
+                    break;
+                case 3:
+                    Bounds.X = 841;
+                    break;
+                case 4:
+                    Bounds.X = 960;
+                    break;
+                case 5:
+                    Bounds.X = 1077;
+                    break;
+                case 6:
+                    Bounds.X = 1194;
+                    break;
+            }
+
             bpm = b;
-            notespeed = bpm / 10;
+            notespeed = bpm / 20.0f;
+            yCoordStart = -30;
+            yCoordHit = 963 - Convert.ToInt32(Bounds.Y) - 75;
+            yCoordTravel = yCoordHit - yCoordStart;
+
+            // Find the frame at which to spawn the note, given travel speed, distance, and hit frame
+            float frameSpawnOffset = yCoordTravel / notespeed;
+            while ( frameSpawnOffset > hitframe )
+            {
+                frameSpawnOffset /= 2;
+                notespeed *= 2;
+            }
+            spawnframe = Convert.ToUInt64(hitframe - frameSpawnOffset);
+
+            // Ensure spawn frame is greater than 0
+            if ( spawnframe < 0 )
+            {
+                spawnframe = 0;
+            }
+
+            active = false;
         }
 
         public void Update( GameTime gt )
         {
-            Bounds.Y += notespeed;
-            if ( Bounds.Y >= game.graphics.PreferredBackBufferHeight )
+            if ( active )
             {
-                Bounds.Y = 0 - Bounds.Height;
+                Bounds.Y += notespeed;
             }
         }
 

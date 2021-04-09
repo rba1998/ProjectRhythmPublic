@@ -22,15 +22,16 @@ namespace ProjectRhythm.GameStates
         Song song;
         SoundEffect metronome;
         List<Note> listnote;
+        Dictionary<float, Note> dictnote;
         System.IO.StreamReader file;
 
         /**** Instance Variables ****/
         UInt64 framecount;
         public const int JudgeLineDistance = 993;
-        string mapname;
-        string songname;
-        float bpm;
-        float offset;
+        public string mapname;
+        public string songname;
+        public float bpm;
+        public float offset;
         float beatsPerSec;
         float framesPerBeat;
 
@@ -54,7 +55,7 @@ namespace ProjectRhythm.GameStates
             this.graphicsDevice = graphicsDevice;
             game = g;
             mapname = s;
-            linetest = "Nope";
+            linetest = "Placeholder Debug Text";
 
             try
             {
@@ -85,7 +86,7 @@ namespace ProjectRhythm.GameStates
             framesPerBeat = 60.0f / beatsPerSec;
 
             enableMetronome = true;
-            timerBeat = 0;
+            timerBeat = framesPerBeat * 2;
             timerOffset = 0;
         }
 
@@ -151,6 +152,17 @@ namespace ProjectRhythm.GameStates
             for ( i = 0; i < listnote.Count; i++ )
             {
                 listnote[ i ].Update( gameTime );
+
+                if ( framecount > listnote[ i ].spawnframe )
+                {
+                    listnote[ i ].active = true;
+                }
+
+
+                if (listnote[ i ].Bounds.Y >= game.graphics.PreferredBackBufferHeight)
+                {
+                    listnote[ i ].active = false;
+                }
             }
         }
 
@@ -201,23 +213,51 @@ namespace ProjectRhythm.GameStates
                     linetest = line;
                     splitline = line.Split(';');
 
-                    UInt64 hitframe = Convert.ToUInt64(splitline[1]) + Convert.ToUInt64(offset);
+                    UInt64 hitframe = Convert.ToUInt64(Math.Round(Convert.ToDouble(splitline[1]) + offset));
+                    linetest = hitframe.ToString();
 
                     // Note type
                     switch (splitline[0])
                     {
                         case "N":
                         default:
-                            Note note = new Note(game, this, txtNote, bpm, hitframe);
+                            Note note = new Note(game, this, txtNote, bpm, hitframe, Convert.ToInt32(splitline[2]));
                             listnote.Add(note);
                             break;
                     }
                 }
+
+                //listnote = ListNoteSort( listnote );
+                linetest = listnote[0].spawnframe.ToString();
             }
             catch( Exception ex )
             {
                 game.Exit();
             }
+        }
+
+        /// <summary>
+        /// Sorts the list of notes contained within this instance of RhythmGame.
+        /// Sorts them by spawn time with the Insertion Sort Algorithm.
+        /// </summary>
+        private List<Note> ListNoteSort( List<Note> notes )
+        {
+            List<Note> returnlist = new List<Note>( notes.Count );
+
+            for ( int i = 0; i < notes.Count; i++ )
+            {
+                Note note = notes[i];
+                int currentindex = i;
+
+                while ( currentindex > 0 && returnlist[currentindex - 1].spawnframe > note.spawnframe )
+                {
+                    currentindex--;
+                }
+
+                returnlist.Insert( currentindex, note );
+            }
+
+            return returnlist;
         }
     }
 }

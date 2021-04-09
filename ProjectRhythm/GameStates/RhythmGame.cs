@@ -35,6 +35,13 @@ namespace ProjectRhythm.GameStates
         float beatsPerSec;
         float framesPerBeat;
 
+        /**** Modifiers ****/
+        public float multiplierNotespeed;
+
+        /**** Timing Calibration Variables ****/
+        public int calibJudgementLine;
+        public int calibBeat;
+
         /**** Timers ****/
         float timerOffset;
         float timerBeat;
@@ -88,6 +95,10 @@ namespace ProjectRhythm.GameStates
             enableMetronome = true;
             timerBeat = framesPerBeat * 2;
             timerOffset = 0;
+
+            // Initialize Player-set modifiers and Calibration Variables
+            calibJudgementLine = 100;
+            multiplierNotespeed = 1.0f;
         }
 
         public override void Initialize()
@@ -213,7 +224,7 @@ namespace ProjectRhythm.GameStates
                     linetest = line;
                     splitline = line.Split(';');
 
-                    UInt64 hitframe = Convert.ToUInt64(Math.Round(Convert.ToDouble(splitline[1]) + offset));
+                    UInt64 hitframe = Convert.ToUInt64((Convert.ToDouble(splitline[1]) * framesPerBeat) + offset);
                     linetest = hitframe.ToString();
 
                     // Note type

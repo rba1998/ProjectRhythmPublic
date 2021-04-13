@@ -70,7 +70,7 @@ namespace ProjectRhythm.Objects
             bpm = b;
             notespeed = (bpm / 10.0f) * rhythmgame.multiplierNotespeed;
             yCoordStart = -30;
-            yCoordHit = 963 - Convert.ToInt32(Bounds.Y) - rhythmgame.calibJudgementLine;
+            yCoordHit = 880 - Convert.ToInt32(Bounds.Y) - rhythmgame.calibJudgementLine;
             yCoordTravel = yCoordHit - yCoordStart;
 
             // Find the frame at which to spawn the note, given travel speed, distance, and hit frame

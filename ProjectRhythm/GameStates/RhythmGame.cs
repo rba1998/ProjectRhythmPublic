@@ -22,8 +22,8 @@ namespace ProjectRhythm.GameStates
         Song song;
         SoundEffect metronome;
         List<Note> listnote;
-        Dictionary<float, Note> dictnote;
         System.IO.StreamReader file;
+        List<WidgetButton> listbutton;
 
         /**** Instance Variables ****/
         UInt64 framecount;
@@ -104,6 +104,7 @@ namespace ProjectRhythm.GameStates
         public override void Initialize()
         {
             listnote = new List<Note>();
+            listbutton = new List<WidgetButton>();
         }
 
         public override void LoadContent( ContentManager content )
@@ -120,15 +121,38 @@ namespace ProjectRhythm.GameStates
 
             // Load Textures
             txtNote = content.Load<Texture2D>( "TestNote" );
-            txtOverlay = content.Load<Texture2D>( "TestOverlay" );
+            txtOverlay = content.Load<Texture2D>( "TestOverlay2" );
 
-
-
-
+            
             /**** Further Initialization of game objects ****/
             overlay = new Overlay( game, this, txtOverlay );
+            
+            listbutton.Add(new WidgetButton(game, this,
+                                            content.Load<Texture2D>( "Textures/Overlay/Button1" ),
+                                            content.Load<Texture2D>( "Textures/Overlay/Button1On" ),
+                                            555, 920, 164, 84, Microsoft.Xna.Framework.Input.Keys.S ) );
+            listbutton.Add(new WidgetButton(game, this,
+                                            content.Load<Texture2D>("Textures/Overlay/Button2"),
+                                            content.Load<Texture2D>("Textures/Overlay/Button2On"),
+                                            700, 920, 137, 84, Microsoft.Xna.Framework.Input.Keys.D));
+            listbutton.Add(new WidgetButton(game, this,
+                                            content.Load<Texture2D>("Textures/Overlay/Button3"),
+                                            content.Load<Texture2D>("Textures/Overlay/Button3On"),
+                                            835, 920, 117, 84, Microsoft.Xna.Framework.Input.Keys.F));
+            listbutton.Add(new WidgetButton(game, this,
+                                            content.Load<Texture2D>("Textures/Overlay/Button4"),
+                                            content.Load<Texture2D>("Textures/Overlay/Button4On"),
+                                            967, 920, 117, 84, Microsoft.Xna.Framework.Input.Keys.J));
+            listbutton.Add(new WidgetButton(game, this,
+                                            content.Load<Texture2D>("Textures/Overlay/Button5"),
+                                            content.Load<Texture2D>("Textures/Overlay/Button5On"),
+                                            1082, 920, 137, 84, Microsoft.Xna.Framework.Input.Keys.K));
+            listbutton.Add(new WidgetButton(game, this,
+                                            content.Load<Texture2D>("Textures/Overlay/Button6"),
+                                            content.Load<Texture2D>("Textures/Overlay/Button6On"),
+                                            1200, 920, 164, 84, Microsoft.Xna.Framework.Input.Keys.L));
 
-            //listnote.Add( new Note( game, this, txtNote, bpm ) );
+
             ReadFile();
 
             MediaPlayer.Play( song );
@@ -158,8 +182,10 @@ namespace ProjectRhythm.GameStates
                 timerBeat++;
             }
 
+            // Update Overlay
             overlay.Update( gameTime );
 
+            // Update Notes
             for ( i = 0; i < listnote.Count; i++ )
             {
                 listnote[ i ].Update( gameTime );
@@ -175,6 +201,12 @@ namespace ProjectRhythm.GameStates
                     listnote[ i ].active = false;
                 }
             }
+
+            // Update Buttons
+            for ( i = 0; i < listbutton.Count; i++ )
+            {
+                listbutton[ i ].Update( gameTime );
+            }
         }
 
         public override void Draw( SpriteBatch spriteBatch )
@@ -184,11 +216,19 @@ namespace ProjectRhythm.GameStates
             _graphicsDevice.Clear(Color.Black); // Clear Draw Buffer
             spriteBatch.Begin();
 
-            overlay.Draw( spriteBatch );
-
+            // Draw Notes
             for ( i = 0; i < listnote.Count; i++ )
             {
                 listnote[ i ].Draw( spriteBatch );
+            }
+
+            // Draw Overlay
+            overlay.Draw(spriteBatch);
+
+            // Draw Overlay widgets
+            for ( i = 0; i < listbutton.Count; i++ )
+            {
+                listbutton[ i ].Draw( spriteBatch );
             }
 
             /**** Debug Text ****/
@@ -209,37 +249,41 @@ namespace ProjectRhythm.GameStates
         {
             try
             {
-                file = new System.IO.StreamReader(@"Maps/" + mapname + ".txt");
-                string line;
-                string[] splitline;
-
-                // Skip first 3 lines
-                file.ReadLine();
-                file.ReadLine();
-                file.ReadLine();
-
-                // Read in rest of the notes
-                while ((line = file.ReadLine()) != null)
+                using (file = new System.IO.StreamReader(@"Maps/" + mapname + ".txt"))
                 {
-                    linetest = line;
-                    splitline = line.Split(';');
 
-                    UInt64 hitframe = Convert.ToUInt64((Convert.ToDouble(splitline[1]) * framesPerBeat) + offset);
-                    linetest = hitframe.ToString();
+                    string line;
+                    string[] splitline;
 
-                    // Note type
-                    switch (splitline[0])
+                    // Skip first 3 lines
+                    file.ReadLine();
+                    file.ReadLine();
+                    file.ReadLine();
+
+                    // Read in rest of the notes
+                    while ((line = file.ReadLine()) != null)
                     {
-                        case "N":
-                        default:
-                            Note note = new Note(game, this, txtNote, bpm, hitframe, Convert.ToInt32(splitline[2]));
-                            listnote.Add(note);
-                            break;
-                    }
-                }
+                        linetest = line;
+                        splitline = line.Split(';');
 
-                //listnote = ListNoteSort( listnote );
-                linetest = listnote[0].spawnframe.ToString();
+                        UInt64 hitframe = Convert.ToUInt64((Convert.ToDouble(splitline[1]) * framesPerBeat) + offset);
+                        linetest = hitframe.ToString();
+
+                        // Note type
+                        switch (splitline[0])
+                        {
+                            case "N":
+                            default:
+                                Note note = new Note(game, this, txtNote, bpm, hitframe, Convert.ToInt32(splitline[2]));
+                                listnote.Add(note);
+                                break;
+                        }
+                    }
+
+                    //listnote = ListNoteSort( listnote );
+                    linetest = listnote[0].spawnframe.ToString();
+                    file.Close();
+                }
             }
             catch( Exception ex )
             {

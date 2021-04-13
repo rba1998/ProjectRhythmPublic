@@ -24,7 +24,6 @@ namespace ProjectRhythm.Objects
 
             Bounds.X = 0;
             Bounds.Y = 0;
-            Bounds.Width = 1920;
             Bounds.Height = g.graphics.PreferredBackBufferHeight;
             Bounds.Width = g.graphics.PreferredBackBufferWidth;
         }

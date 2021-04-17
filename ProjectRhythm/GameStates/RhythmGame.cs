@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using ProjectRhythm.Objects;
 using System;
@@ -33,8 +34,9 @@ namespace ProjectRhythm.GameStates
         public string songname;
         public float bpm;
         public float offset;
-        float beatsPerSec;
-        float framesPerBeat;
+        public float beatsPerSec;
+        public float framesPerBeat;
+        private KeyboardState previousKeyState;
 
         /**** Modifiers ****/
         public float multiplierNotespeed;
@@ -42,6 +44,8 @@ namespace ProjectRhythm.GameStates
         /**** Timing Calibration Variables ****/
         public int calibJudgementLine;
         public int calibBeat;
+        private float accuPerfect;
+        private float accuOkay;
 
         /**** Timers ****/
         float timerOffset;
@@ -93,13 +97,15 @@ namespace ProjectRhythm.GameStates
             beatsPerSec = bpm / 60.0f;
             framesPerBeat = 60.0f / beatsPerSec;
 
-            enableMetronome = true;
+            enableMetronome = false;
             timerBeat = framesPerBeat * 2;
             timerOffset = 0;
 
             // Initialize Player-set modifiers and Calibration Variables
             calibJudgementLine = 100;
             multiplierNotespeed = 1.0f;
+            accuPerfect = 5.0f;
+            accuOkay = 10.0f;
         }
 
         public override void Initialize()
@@ -202,6 +208,9 @@ namespace ProjectRhythm.GameStates
             {
                 listnote_active[ i ].Update( gameTime );
             }
+
+            // Checks input to see if the player successfully hits the note
+            CheckInput();
 
             // Update Buttons
             for ( i = 0; i < listbutton.Count; i++ )
@@ -314,6 +323,150 @@ namespace ProjectRhythm.GameStates
             }
 
             return returnlist;
+        }
+
+        private void CheckInput()
+        {
+            KeyboardState keyState = Keyboard.GetState();
+
+            CheckLane( keyState, Keys.S );
+            CheckLane( keyState, Keys.D );
+            CheckLane( keyState, Keys.F );
+            CheckLane( keyState, Keys.J );
+            CheckLane( keyState, Keys.K );
+            CheckLane( keyState, Keys.L );
+
+            previousKeyState = keyState;
+        }
+
+        private void CheckLane( KeyboardState keyState, Keys key )
+        {
+            if (keyState.IsKeyDown( key ) & !previousKeyState.IsKeyDown( key ))
+            {
+                switch ( key )
+                {
+                    case Keys.S:
+                        for( int i = 0; i < listnote_active.Count; i++ )
+                        {
+                            if ( listnote_active[ i ].lane == 1 )
+                            {
+                                // Perfect Judgement
+                                if ( framecount - listnote_active[ i ].hitframe < accuPerfect  || listnote_active[ i ].hitframe - framecount < accuPerfect )
+                                {
+                                    metronome.Play();
+                                    listnote_active.RemoveAt( i );
+                                    break;
+                                }
+                                // Okay Judgement
+                                else if ( framecount - listnote_active[ i ].hitframe < accuOkay  || listnote_active[ i ].hitframe - framecount < accuOkay )
+                                {
+                                    metronome.Play();
+                                    listnote_active.RemoveAt( i );
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case Keys.D:
+                        for (int i = 0; i < listnote_active.Count; i++)
+                        {
+                            if (listnote_active[i].lane == 2)
+                            {
+                                // Perfect Judgement
+                                if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                                {
+                                    metronome.Play();
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
+                                // Okay Judgement
+                                else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
+                                {
+                                    metronome.Play();
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case Keys.F:
+                        for (int i = 0; i < listnote_active.Count; i++)
+                        {
+                            // Perfect Judgement
+                            if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                            {
+                                metronome.Play();
+                                listnote_active.RemoveAt(i);
+                                break;
+                            }
+                            // Okay Judgement
+                            else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
+                            {
+                                metronome.Play();
+                                listnote_active.RemoveAt(i);
+                                break;
+                            }
+                        }
+                        break;
+                    case Keys.J:
+                        for (int i = 0; i < listnote_active.Count; i++)
+                        {
+                            // Perfect Judgement
+                            if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                            {
+                                metronome.Play();
+                                listnote_active.RemoveAt(i);
+                                break;
+                            }
+                            // Okay Judgement
+                            else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
+                            {
+                                metronome.Play();
+                                listnote_active.RemoveAt(i);
+                                break;
+                            }
+                        }
+                        break;
+                    case Keys.K:
+                        for (int i = 0; i < listnote_active.Count; i++)
+                        {
+                            // Perfect Judgement
+                            if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                            {
+                                metronome.Play();
+                                listnote_active.RemoveAt(i);
+                                break;
+                            }
+                            // Okay Judgement
+                            else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
+                            {
+                                metronome.Play();
+                                listnote_active.RemoveAt(i);
+                                break;
+                            }
+                        }
+                        break;
+                    case Keys.L:
+                        for (int i = 0; i < listnote_active.Count; i++)
+                        {
+                            // Perfect Judgement
+                            if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                            {
+                                metronome.Play();
+                                listnote_active.RemoveAt(i);
+                                break;
+                            }
+                            // Okay Judgement
+                            else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
+                            {
+                                metronome.Play();
+                                listnote_active.RemoveAt(i);
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }
         }
     }
 }

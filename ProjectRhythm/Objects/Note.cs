@@ -22,6 +22,7 @@ namespace ProjectRhythm.Objects
         private int yCoordHit;
         public float yCoordTravel;
         public bool active;
+        public int lane;
 
         public UInt64 spawnframe;
         public UInt64 hitframe;
@@ -49,21 +50,27 @@ namespace ProjectRhythm.Objects
                 case 1:
                 default:
                     Bounds.X = 607;
+                    lane = 1;
                     break;
                 case 2:
                     Bounds.X = 724;
+                    lane = 2;
                     break;
                 case 3:
                     Bounds.X = 841;
+                    lane = 3;
                     break;
                 case 4:
                     Bounds.X = 960;
+                    lane = 4;
                     break;
                 case 5:
                     Bounds.X = 1077;
+                    lane = 5;
                     break;
                 case 6:
                     Bounds.X = 1194;
+                    lane = 6;
                     break;
             }
 

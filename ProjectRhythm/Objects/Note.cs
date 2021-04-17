@@ -93,10 +93,7 @@ namespace ProjectRhythm.Objects
 
         public void Update( GameTime gt )
         {
-            if ( active )
-            {
-                Bounds.Y += notespeed;
-            }
+            Bounds.Y += notespeed;
         }
 
         public void Draw( SpriteBatch sb )

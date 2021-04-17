@@ -22,6 +22,7 @@ namespace ProjectRhythm.GameStates
         Song song;
         SoundEffect metronome;
         List<Note> listnote;
+        List<Note> listnote_active;
         System.IO.StreamReader file;
         List<WidgetButton> listbutton;
 
@@ -104,6 +105,7 @@ namespace ProjectRhythm.GameStates
         public override void Initialize()
         {
             listnote = new List<Note>();
+            listnote_active = new List<Note>();
             listbutton = new List<WidgetButton>();
         }
 
@@ -185,21 +187,20 @@ namespace ProjectRhythm.GameStates
             // Update Overlay
             overlay.Update( gameTime );
 
-            // Update Notes
+            // Update Idle Notes
             for ( i = 0; i < listnote.Count; i++ )
             {
-                listnote[ i ].Update( gameTime );
 
                 if ( framecount > listnote[ i ].spawnframe )
                 {
-                    listnote[ i ].active = true;
+                    listnote_active.Add( listnote[ i ] );
+                    listnote.RemoveAt( i );
                 }
-
-
-                if (listnote[ i ].Bounds.Y >= game.graphics.PreferredBackBufferHeight)
-                {
-                    listnote[ i ].active = false;
-                }
+            }
+            // Update Active Notes
+            for ( i = 0; i < listnote_active.Count; i++ )
+            {
+                listnote_active[ i ].Update( gameTime );
             }
 
             // Update Buttons
@@ -217,9 +218,9 @@ namespace ProjectRhythm.GameStates
             spriteBatch.Begin();
 
             // Draw Notes
-            for ( i = 0; i < listnote.Count; i++ )
+            for ( i = 0; i < listnote_active.Count; i++ )
             {
-                listnote[ i ].Draw( spriteBatch );
+                listnote_active[ i ].Draw( spriteBatch );
             }
 
             // Draw Overlay

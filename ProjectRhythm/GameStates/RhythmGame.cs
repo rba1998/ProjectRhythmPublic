@@ -26,6 +26,7 @@ namespace ProjectRhythm.GameStates
         List<Note> listnote_active;
         System.IO.StreamReader file;
         List<WidgetButton> listbutton;
+        List<NoteHitEffect> notehits;
 
         /**** Instance Variables ****/
         UInt64 framecount;
@@ -37,6 +38,17 @@ namespace ProjectRhythm.GameStates
         public float beatsPerSec;
         public float framesPerBeat;
         private KeyboardState previousKeyState;
+        private bool textflash;
+        private int textTimer;
+        private int textDisappearTime;
+
+        public int Chain;
+        public int Score;
+        private String chainText;
+        private Color chainColor;
+        private int hitHoteCount;
+        private int totalNoteCount;
+        public float Accuracy;
 
         /**** Modifiers ****/
         public float multiplierNotespeed;
@@ -54,6 +66,7 @@ namespace ProjectRhythm.GameStates
         /**** Textures ****/
         Texture2D txtNote;
         Texture2D txtOverlay;
+        Texture2D txtNoteHit;
 
         /****  Fonts   ****/
         SpriteFont fontJetset;
@@ -106,6 +119,13 @@ namespace ProjectRhythm.GameStates
             multiplierNotespeed = 1.0f;
             accuPerfect = 5.0f;
             accuOkay = 10.0f;
+
+            // Initialize game variables
+            Chain = 0;
+            Score = 0;
+            Accuracy = 0;
+            textDisappearTime = 60;
+            textTimer = 0;
         }
 
         public override void Initialize()
@@ -113,6 +133,7 @@ namespace ProjectRhythm.GameStates
             listnote = new List<Note>();
             listnote_active = new List<Note>();
             listbutton = new List<WidgetButton>();
+            notehits = new List<NoteHitEffect>();
         }
 
         public override void LoadContent( ContentManager content )
@@ -130,6 +151,7 @@ namespace ProjectRhythm.GameStates
             // Load Textures
             txtNote = content.Load<Texture2D>( "TestNote" );
             txtOverlay = content.Load<Texture2D>( "TestOverlay2" );
+            txtNoteHit = content.Load<Texture2D>( "Textures/NoteHit" );
 
             
             /**** Further Initialization of game objects ****/
@@ -207,6 +229,18 @@ namespace ProjectRhythm.GameStates
             for ( i = 0; i < listnote_active.Count; i++ )
             {
                 listnote_active[ i ].Update( gameTime );
+
+                // Miss
+                if (framecount - listnote_active[i].hitframe > accuOkay && framecount - listnote_active[ i ].hitframe < 100)
+                {
+                    Chain = 0;
+                    chainText = "BREAK";
+                    chainColor = Color.Red;
+                    textTimer = 0;
+
+                    listnote_active.RemoveAt(i);
+                    break;
+                }
             }
 
             // Checks input to see if the player successfully hits the note
@@ -216,6 +250,16 @@ namespace ProjectRhythm.GameStates
             for ( i = 0; i < listbutton.Count; i++ )
             {
                 listbutton[ i ].Update( gameTime );
+            }
+
+            // Update Note Hit Effects
+            for ( i = 0; i < notehits.Count; i++ )
+            {
+                notehits[ i ].Update();
+                if ( notehits[ i ].AnimationDone )
+                {
+                    notehits.RemoveAt( i );
+                }
             }
         }
 
@@ -241,7 +285,35 @@ namespace ProjectRhythm.GameStates
                 listbutton[ i ].Draw( spriteBatch );
             }
 
-            /**** Debug Text ****/
+            // Draw Note Hit Effects
+            for ( i = 0; i < notehits.Count; i++ )
+            {
+                notehits[ i ].Draw( spriteBatch );
+            }
+
+            // Draw Chain Text
+            if ( Chain > 0 || chainText == "BREAK" )
+            {
+                if (textTimer < textDisappearTime)
+                {
+                    // Uncomment this stuff to make the text flash
+                    //if (textflash)
+                    //{
+                        Vector2 vector = fontJetset.MeasureString(chainText);
+                        float length = vector.X;
+                        float posX = (game.graphics.PreferredBackBufferWidth / 2) - length;
+                        spriteBatch.DrawString(fontJetset, chainText, new Vector2(posX, 700), chainColor, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
+                        textflash = false;
+                    /*}
+                    else
+                    {
+                        textflash = true;
+                    }*/
+                    textTimer++;
+                }
+            }
+
+            /**** Debug Text ****//*
             spriteBatch.DrawString( fontJetset, MediaPlayer.PlayPosition.ToString(), new Vector2( 10, 10 ), Color.White );
             spriteBatch.DrawString( fontJetset, framecount.ToString(), new Vector2( 10, 30 ), Color.White );
             spriteBatch.DrawString( fontJetset, "BPM = " + bpm.ToString(), new Vector2( 10, 50 ), Color.White );
@@ -249,7 +321,7 @@ namespace ProjectRhythm.GameStates
             spriteBatch.DrawString( fontJetset, "Beats Per Sec = " + beatsPerSec.ToString(), new Vector2( 10, 90 ), Color.White );
             spriteBatch.DrawString( fontJetset, "Frames Per Beat = " + framesPerBeat.ToString(), new Vector2( 10, 110 ), Color.White );
             spriteBatch.DrawString( fontJetset, "Song name = " + songname, new Vector2( 10, 130 ), Color.White );
-            spriteBatch.DrawString( fontJetset, "Line 4 = " + linetest, new Vector2( 10, 150 ), Color.White );
+            spriteBatch.DrawString( fontJetset, "Line 4 = " + linetest, new Vector2( 10, 150 ), Color.White );*/
 
             // Draw sprites here
             spriteBatch.End();
@@ -353,13 +425,24 @@ namespace ProjectRhythm.GameStates
                                 // Perfect Judgement
                                 if ( framecount - listnote_active[ i ].hitframe < accuPerfect  || listnote_active[ i ].hitframe - framecount < accuPerfect )
                                 {
+                                    Chain++;
+                                    chainText = "PERFECT " + Chain;
+                                    chainColor = Color.AliceBlue;
+                                    textTimer = 0;
+
                                     metronome.Play();
+                                    notehits.Add( new NoteHitEffect( txtNoteHit, 534, 795 ) );
                                     listnote_active.RemoveAt( i );
                                     break;
                                 }
                                 // Okay Judgement
                                 else if ( framecount - listnote_active[ i ].hitframe < accuOkay  || listnote_active[ i ].hitframe - framecount < accuOkay )
                                 {
+                                    Chain++;
+                                    chainText = "GOOD " + Chain;
+                                    chainColor = Color.Aquamarine;
+                                    textTimer = 0;
+
                                     metronome.Play();
                                     listnote_active.RemoveAt( i );
                                     break;
@@ -375,13 +458,24 @@ namespace ProjectRhythm.GameStates
                                 // Perfect Judgement
                                 if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
                                 {
+                                    Chain++;
+                                    chainText = "PERFECT " + Chain;
+                                    chainColor = Color.AliceBlue;
+                                    textTimer = 0;
+
                                     metronome.Play();
+                                    notehits.Add(new NoteHitEffect(txtNoteHit, 651, 795));
                                     listnote_active.RemoveAt(i);
                                     break;
                                 }
                                 // Okay Judgement
                                 else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
                                 {
+                                    Chain++;
+                                    chainText = "GOOD " + Chain;
+                                    chainColor = Color.Aquamarine;
+                                    textTimer = 0;
+
                                     metronome.Play();
                                     listnote_active.RemoveAt(i);
                                     break;
@@ -392,76 +486,131 @@ namespace ProjectRhythm.GameStates
                     case Keys.F:
                         for (int i = 0; i < listnote_active.Count; i++)
                         {
-                            // Perfect Judgement
-                            if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                            if (listnote_active[i].lane == 3)
                             {
-                                metronome.Play();
-                                listnote_active.RemoveAt(i);
-                                break;
-                            }
-                            // Okay Judgement
-                            else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
-                            {
-                                metronome.Play();
-                                listnote_active.RemoveAt(i);
-                                break;
+                                // Perfect Judgement
+                                if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                                {
+                                    Chain++;
+                                    chainText = "PERFECT " + Chain;
+                                    chainColor = Color.AliceBlue;
+                                    textTimer = 0;
+
+                                    metronome.Play();
+                                    notehits.Add(new NoteHitEffect(txtNoteHit, 768, 795));
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
+                                // Okay Judgement
+                                else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
+                                {
+                                    Chain++;
+                                    chainText = "GOOD " + Chain;
+                                    chainColor = Color.Aquamarine;
+
+                                    metronome.Play();
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
                             }
                         }
                         break;
                     case Keys.J:
                         for (int i = 0; i < listnote_active.Count; i++)
                         {
-                            // Perfect Judgement
-                            if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                            if (listnote_active[i].lane == 4)
                             {
-                                metronome.Play();
-                                listnote_active.RemoveAt(i);
-                                break;
-                            }
-                            // Okay Judgement
-                            else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
-                            {
-                                metronome.Play();
-                                listnote_active.RemoveAt(i);
-                                break;
+                                // Perfect Judgement
+                                if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                                {
+                                    Chain++;
+                                    chainText = "PERFECT " + Chain;
+                                    chainColor = Color.AliceBlue;
+                                    textTimer = 0;
+
+                                    metronome.Play();
+                                    notehits.Add(new NoteHitEffect(txtNoteHit, 885, 795));
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
+                                // Okay Judgement
+                                else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
+                                {
+                                    Chain++;
+                                    chainText = "GOOD " + Chain;
+                                    chainColor = Color.Aquamarine;
+                                    textTimer = 0;
+
+                                    metronome.Play();
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
                             }
                         }
                         break;
                     case Keys.K:
                         for (int i = 0; i < listnote_active.Count; i++)
                         {
-                            // Perfect Judgement
-                            if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                            if (listnote_active[i].lane == 5)
                             {
-                                metronome.Play();
-                                listnote_active.RemoveAt(i);
-                                break;
-                            }
-                            // Okay Judgement
-                            else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
-                            {
-                                metronome.Play();
-                                listnote_active.RemoveAt(i);
-                                break;
+                                // Perfect Judgement
+                                if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                                {
+                                    Chain++;
+                                    chainText = "PERFECT " + Chain;
+                                    chainColor = Color.AliceBlue;
+                                    textTimer = 0;
+
+                                    metronome.Play();
+                                    notehits.Add(new NoteHitEffect(txtNoteHit, 1002, 795));
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
+                                // Okay Judgement
+                                else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
+                                {
+                                    Chain++;
+                                    chainText = "GOOD " + Chain;
+                                    chainColor = Color.Aquamarine;
+                                    textTimer = 0;
+
+                                    metronome.Play();
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
                             }
                         }
                         break;
                     case Keys.L:
                         for (int i = 0; i < listnote_active.Count; i++)
                         {
-                            // Perfect Judgement
-                            if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                            if (listnote_active[i].lane == 6)
                             {
-                                metronome.Play();
-                                listnote_active.RemoveAt(i);
-                                break;
-                            }
-                            // Okay Judgement
-                            else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
-                            {
-                                metronome.Play();
-                                listnote_active.RemoveAt(i);
-                                break;
+                                // Perfect Judgement
+                                if (framecount - listnote_active[i].hitframe < accuPerfect || listnote_active[i].hitframe - framecount < accuPerfect)
+                                {
+                                    Chain++;
+                                    chainText = "PERFECT " + Chain;
+                                    chainColor = Color.AliceBlue;
+                                    textTimer = 0;
+
+                                    metronome.Play();
+                                    notehits.Add(new NoteHitEffect(txtNoteHit, 1119, 795));
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
+                                // Okay Judgement
+                                else if (framecount - listnote_active[i].hitframe < accuOkay || listnote_active[i].hitframe - framecount < accuOkay)
+                                {
+                                    Chain++;
+                                    chainText = "GOOD " + Chain;
+                                    chainColor = Color.Aquamarine;
+                                    textTimer = 0;
+
+                                    metronome.Play();
+                                    listnote_active.RemoveAt(i);
+                                    break;
+                                }
                             }
                         }
                         break;

@@ -48,6 +48,7 @@
     <Compile Include="GameStates\IGameState.cs" />
     <Compile Include="GameStates\RhythmGame.cs" />
     <Compile Include="Objects\Note.cs" />
+    <Compile Include="Objects\NoteHitEffect.cs" />
     <Compile Include="Objects\Overlay.cs" />
     <Compile Include="Objects\WidgetButton.cs" />
     <Compile Include="Program.cs" />

@@ -49,7 +49,8 @@ namespace ProjectRhythm
             spriteBatch = new SpriteBatch(GraphicsDevice);
             GameStateManager.Instance.SetContent(Content);
 
-            GameStateManager.Instance.AddScreen( new RhythmGame( GraphicsDevice, this, "Freedom Dive" ) );
+            GameStateManager.Instance.AddScreen( new TitleScreen( GraphicsDevice, this ) );
+            //GameStateManager.Instance.AddScreen( new RhythmGame( GraphicsDevice, this, "Freedom Dive" ) );
         }
 
         /// <summary>

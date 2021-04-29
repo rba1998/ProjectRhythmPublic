@@ -211,7 +211,9 @@ namespace ProjectRhythm.GameStates
             int i; //iterative variable
 
             timerOffset++;
-            framecount++;
+
+            // Calibrate current frame to be in-time with the position of the song.
+            framecount = Convert.ToUInt64(MediaPlayer.PlayPosition.TotalSeconds * 60);
 
             // Beat
             if (timerOffset >= offset)
@@ -232,7 +234,7 @@ namespace ProjectRhythm.GameStates
             for ( i = 0; i < listnote.Count; i++ )
             {
 
-                if ( framecount > listnote[ i ].spawnframe )
+                if ( framecount >= listnote[ i ].spawnframe )
                 {
                     listnote_active.Add( listnote[ i ] );
                     listnote.RemoveAt( i );
@@ -287,6 +289,11 @@ namespace ProjectRhythm.GameStates
             {
                 if (timerEndGame <= 0)
                 {
+                    if (Chain > maxChain)
+                    {
+                        maxChain = Chain;
+                    }
+
                     MediaPlayer.Stop();
                     GameStateManager.Instance.ChangeScreen(new RhythmGameResults(graphicsDevice, game, this));
                 }
@@ -331,18 +338,19 @@ namespace ProjectRhythm.GameStates
                 if (textTimer < textDisappearTime)
                 {
                     // Uncomment this stuff to make the text flash
-                    //if (textflash)
-                    //{
+                    if (textflash)
+                    {
                         Vector2 vector = fontJetset.MeasureString(chainText);
                         float length = vector.X;
                         float posX = (game.graphics.PreferredBackBufferWidth / 2) - length;
                         spriteBatch.DrawString(fontJetset, chainText, new Vector2(posX, 700), chainColor, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
-                        textflash = false;
-                    /*}
+                        if ( chainText == "BREAK" )
+                            textflash = false;
+                    }
                     else
                     {
                         textflash = true;
-                    }*/
+                    }
                     textTimer++;
                 }
             }

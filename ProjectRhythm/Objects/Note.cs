@@ -89,7 +89,7 @@ namespace ProjectRhythm.Objects
             }
             spawnframe = Convert.ToUInt64(hitframe - frameSpawnOffset);
 
-            // Ensure spawn frame is greater than 0
+            // Ensure spawn frame is greater than or equal to 0
             if ( spawnframe < 0 )
             {
                 spawnframe = 0;

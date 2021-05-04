@@ -245,6 +245,16 @@ namespace ProjectRhythm.GameStates
             {
                 listnote_active[ i ].Update( gameTime );
 
+                // Double Notes
+                if ( i + 1 < listnote_active.Count )
+                {
+                    if ( listnote_active[ i ].spawnframe == listnote_active[ i + 1 ].spawnframe )
+                    {
+                        listnote_active[ i + 1 ].Bounds.Y = listnote_active[ i ].Bounds.Y;
+                        i++;
+                    }
+                }
+
                 // Miss
                 if (framecount - listnote_active[i].hitframe > accuOkay + calibNoteTiming && framecount - listnote_active[ i ].hitframe < 100)
                 {

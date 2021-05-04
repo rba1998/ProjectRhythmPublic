@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ProjectRhythm.Objects.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +11,18 @@ using System.Threading.Tasks;
 
 namespace ProjectRhythm.GameStates
 {
-    public class TitleScreen : GameState
+    class ScreenSignIn : GameState
     {
+        Texture2D Background;
         Game game;
         GraphicsDevice graphicsDevice;
         KeyboardState previousKeyboardState;
 
-        Texture2D Background;
+        Texture2D textureWindow1;
 
-        public TitleScreen(GraphicsDevice graphicsDevice, Game g) : base(graphicsDevice, g)
+        WindowCreateOrSignIn window1;
+
+        public ScreenSignIn(GraphicsDevice graphicsDevice, Game g) : base(graphicsDevice, g)
         {
             this.graphicsDevice = graphicsDevice;
             game = g;
@@ -33,7 +37,10 @@ namespace ProjectRhythm.GameStates
 
         public override void LoadContent(ContentManager content)
         {
-            Background = content.Load<Texture2D>("TitleScreenPlaceholder");
+            textureWindow1 = content.Load<Texture2D>("Textures/UI/Window1Anim");
+            window1 = new WindowCreateOrSignIn(game, textureWindow1);
+
+            window1.LoadContent( content );
         }
 
         public override void UnloadContent()
@@ -45,10 +52,12 @@ namespace ProjectRhythm.GameStates
         {
             KeyboardState KeyboardState = Keyboard.GetState();
 
-            if ( KeyboardState.IsKeyDown( Keys.Enter ) && !previousKeyboardState.IsKeyDown( Keys.Enter ) )
+            if (KeyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
             {
-                GameStateManager.Instance.ChangeScreen( new ScreenSignIn( graphicsDevice, game ) );
+                GameStateManager.Instance.ChangeScreen(new RhythmGame(graphicsDevice, game, "Freedom Dive"));
             }
+
+            window1.Update(gameTime);
 
             previousKeyboardState = KeyboardState;
         }
@@ -58,7 +67,9 @@ namespace ProjectRhythm.GameStates
             _graphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
-            spriteBatch.Draw(Background, new Rectangle(0, 0, game.graphics.PreferredBackBufferWidth, game.graphics.PreferredBackBufferHeight), Color.White);
+
+            window1.Draw(spriteBatch);
+
             spriteBatch.End();
         }
     }

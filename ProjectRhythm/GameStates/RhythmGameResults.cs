@@ -47,6 +47,8 @@ namespace ProjectRhythm.GameStates
             posBreak = new Vector2(400, 655);
             posMax = new Vector2(400, 820);
             posAccu = new Vector2(400, 985);
+
+            previousKeyboardState = Keyboard.GetState();
         }
 
         public override void Initialize()

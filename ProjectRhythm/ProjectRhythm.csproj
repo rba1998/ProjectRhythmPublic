@@ -65,10 +65,12 @@
     <Compile Include="GameStates\RhythmGameResults.cs" />
     <Compile Include="GameStates\ScreenSignIn.cs" />
     <Compile Include="GameStates\TitleScreen.cs" />
+    <Compile Include="Objects\Character.cs" />
     <Compile Include="Objects\Note.cs" />
     <Compile Include="Objects\NoteHitEffect.cs" />
     <Compile Include="Objects\Overlay.cs" />
     <Compile Include="Objects\UI\ButtonCreateOrSignInWindow.cs" />
+    <Compile Include="Objects\UI\WindowText.cs" />
     <Compile Include="Objects\UI\WindowCreateOrSignIn.cs" />
     <Compile Include="Objects\WidgetButton.cs" />
     <Compile Include="Program.cs" />

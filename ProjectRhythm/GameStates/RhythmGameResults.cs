@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ProjectRhythm.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,12 @@ namespace ProjectRhythm.GameStates
         Vector2 posPerfect, posGood, posBreak, posMax, posAccu;
 
         Texture2D Background;
+        Texture2D TextureCharacterIdle;
+        Texture2D TextureCharacterTalk1;
+        Texture2D TextureCharacterTalk2;
+        Texture2D TextureWindow;
+
+        Character character;
 
         public RhythmGameResults(GraphicsDevice graphicsDevice, Game g, RhythmGame rg) : base(graphicsDevice, g)
         {
@@ -59,7 +66,38 @@ namespace ProjectRhythm.GameStates
         public override void LoadContent(ContentManager content)
         {
             Background = content.Load<Texture2D>("ResultsScreenPlaceholder");
+            TextureCharacterIdle = content.Load<Texture2D>("Characters/Rayo/Rayo");
+            TextureCharacterTalk1 = content.Load<Texture2D>("Characters/Rayo/RayoTalk1");
+            TextureCharacterTalk2 = content.Load<Texture2D>("Characters/Rayo/RayoTalk2");
+            TextureWindow = content.Load<Texture2D>("Textures/UI/Window1Anim");
             fontJetset = content.Load<SpriteFont>("Fonts/JetSet");
+
+            character = new Character(TextureCharacterIdle, TextureCharacterTalk1, TextureCharacterTalk2, TextureWindow, fontJetset, 1000, -100);
+
+            if ( countBreak == 0 )
+            {
+                character.Talk("Amazing! you got a full chain!\nYou're a really skilled performer!\nUm... would you show me again sometime?", 360);
+            }
+            else if ( accuracy >= 95.0f )
+            {
+                character.Talk("Wow! You're super accurate!\nYou have an amazing sense of rhythm!", 360);
+            }
+            else if ( accuracy >= 90.0f )
+            {
+                character.Talk("You played really well, that was great!\nI always enjoy performing with you!", 360);
+            }
+            else if ( accuracy >= 80.0f )
+            {
+                character.Talk("Nice one! That was a solid performance.\nI'm excited to see what you play next!", 360);
+            }
+            else if ( accuracy >= 70.0f )
+            {
+                character.Talk("Woah, just made it!\nThat one was hard, but you got through!\nI never gave up hope!", 360);
+            }
+            else
+            {
+                character.Talk("Oops... that's okay though.\nGive it another shot, you can do it!", 360);
+            }
         }
 
         public override void UnloadContent()
@@ -76,6 +114,8 @@ namespace ProjectRhythm.GameStates
                 GameStateManager.Instance.ChangeScreen(new TitleScreen(graphicsDevice, game));
             }
 
+            character.Update();
+
             previousKeyboardState = KeyboardState;
         }
 
@@ -90,6 +130,7 @@ namespace ProjectRhythm.GameStates
             spriteBatch.DrawString(fontJetset, countBreak.ToString(), posBreak, Color.Red);
             spriteBatch.DrawString(fontJetset, maxChain.ToString(), posMax, Color.Aquamarine);
             spriteBatch.DrawString(fontJetset, accuracy.ToString(), posAccu, Color.Aquamarine);
+            character.Draw( spriteBatch );
             spriteBatch.End();
         }
     }

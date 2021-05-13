@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ProjectRhythm.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,12 @@ namespace ProjectRhythm.GameStates
         KeyboardState previousKeyboardState;
 
         Texture2D Background;
+        Texture2D TextureCharacterIdle;
+        Texture2D TextureCharacterTalk1;
+        Texture2D TextureCharacterTalk2;
+        Texture2D TextureWindow;
+
+        Character character;
 
         public TitleScreen(GraphicsDevice graphicsDevice, Game g) : base(graphicsDevice, g)
         {
@@ -34,6 +41,14 @@ namespace ProjectRhythm.GameStates
         public override void LoadContent(ContentManager content)
         {
             Background = content.Load<Texture2D>("TitleScreenPlaceholder");
+            TextureCharacterIdle = content.Load<Texture2D>("Characters/Rayo/Rayo");
+            TextureCharacterTalk1 = content.Load<Texture2D>("Characters/Rayo/RayoTalk1");
+            TextureCharacterTalk2 = content.Load<Texture2D>("Characters/Rayo/RayoTalk2");
+            TextureWindow = content.Load<Texture2D>("Textures/UI/Window1Anim");
+            SpriteFont fontJetset = content.Load<SpriteFont>("Fonts/JetSet");
+
+            character = new Character( TextureCharacterIdle, TextureCharacterTalk1, TextureCharacterTalk2, TextureWindow, fontJetset, -100, -100 );
+            character.Talk("Welcome to Project Rhythm!", 120);
         }
 
         public override void UnloadContent()
@@ -50,6 +65,8 @@ namespace ProjectRhythm.GameStates
                 GameStateManager.Instance.ChangeScreen( new ScreenSignIn( graphicsDevice, game ) );
             }
 
+            character.Update();
+
             previousKeyboardState = KeyboardState;
         }
 
@@ -59,6 +76,7 @@ namespace ProjectRhythm.GameStates
 
             spriteBatch.Begin();
             spriteBatch.Draw(Background, new Rectangle(0, 0, game.graphics.PreferredBackBufferWidth, game.graphics.PreferredBackBufferHeight), Color.White);
+            character.Draw( spriteBatch );
             spriteBatch.End();
         }
     }

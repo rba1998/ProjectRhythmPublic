@@ -48,7 +48,7 @@ namespace ProjectRhythm.GameStates
             SpriteFont fontJetset = content.Load<SpriteFont>("Fonts/JetSet");
 
             character = new Character( TextureCharacterIdle, TextureCharacterTalk1, TextureCharacterTalk2, TextureWindow, fontJetset, -100, -100 );
-            character.Talk("Welcome to Project Rhythm!", 120);
+            character.Talk("Welcome to Project Rhythm!\nMy name is Rayo, and I'll be your navigator!", 180);
         }
 
         public override void UnloadContent()

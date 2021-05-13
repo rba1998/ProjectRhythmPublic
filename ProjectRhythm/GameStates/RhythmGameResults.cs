@@ -25,6 +25,7 @@ namespace ProjectRhythm.GameStates
         int countBreak;
         int maxChain;
         float accuracy;
+        float accuracyFormatted;
 
         /*** Stat positions ***/
         Vector2 posPerfect, posGood, posBreak, posMax, posAccu;
@@ -48,12 +49,13 @@ namespace ProjectRhythm.GameStates
             countBreak = rhythmgame.countBreak;
             maxChain = rhythmgame.maxChain;
             accuracy = (rhythmgame.hitNoteCount / rhythmgame.totalNoteCount) * 100.0f;
+            accuracyFormatted = Convert.ToSingle(decimal.Round((decimal)accuracy, 2, MidpointRounding.AwayFromZero));
 
-            posPerfect = new Vector2(400, 325);
-            posGood = new Vector2(400, 490);
-            posBreak = new Vector2(400, 655);
-            posMax = new Vector2(400, 820);
-            posAccu = new Vector2(400, 985);
+            posPerfect = new Vector2(450, 185);
+            posGood = new Vector2(450, 330);
+            posBreak = new Vector2(450, 475);
+            posMax = new Vector2(450, 630);
+            posAccu = new Vector2(450, 770);
 
             previousKeyboardState = Keyboard.GetState();
         }
@@ -65,7 +67,7 @@ namespace ProjectRhythm.GameStates
 
         public override void LoadContent(ContentManager content)
         {
-            Background = content.Load<Texture2D>("ResultsScreenPlaceholder");
+            Background = content.Load<Texture2D>("Results Screen 2");
             TextureCharacterIdle = content.Load<Texture2D>("Characters/Rayo/Rayo");
             TextureCharacterTalk1 = content.Load<Texture2D>("Characters/Rayo/RayoTalk1");
             TextureCharacterTalk2 = content.Load<Texture2D>("Characters/Rayo/RayoTalk2");
@@ -74,7 +76,11 @@ namespace ProjectRhythm.GameStates
 
             character = new Character(TextureCharacterIdle, TextureCharacterTalk1, TextureCharacterTalk2, TextureWindow, fontJetset, 1000, -100);
 
-            if ( countBreak == 0 )
+            if ( countBreak == 0 && accuracy >= 100.0f )
+            {
+                character.Talk("I... I don't know what to say...\nYou cleared the song with a completely\nperfect rating!\nIt really doesn't get better than that!", 360);
+            }
+            else if ( countBreak == 0 )
             {
                 character.Talk("Amazing! you got a full chain!\nYou're a really skilled performer!\nUm... would you show me again sometime?", 360);
             }
@@ -125,11 +131,11 @@ namespace ProjectRhythm.GameStates
 
             spriteBatch.Begin();
             spriteBatch.Draw(Background, new Rectangle(0, 0, game.graphics.PreferredBackBufferWidth, game.graphics.PreferredBackBufferHeight), Color.White);
-            spriteBatch.DrawString(fontJetset, countPerfect.ToString(), posPerfect, Color.AliceBlue);
-            spriteBatch.DrawString(fontJetset, countGood.ToString(), posGood, Color.Aquamarine);
-            spriteBatch.DrawString(fontJetset, countBreak.ToString(), posBreak, Color.Red);
-            spriteBatch.DrawString(fontJetset, maxChain.ToString(), posMax, Color.Aquamarine);
-            spriteBatch.DrawString(fontJetset, accuracy.ToString(), posAccu, Color.Aquamarine);
+            spriteBatch.DrawString(fontJetset, countPerfect.ToString(), posPerfect, Color.DarkBlue, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
+            spriteBatch.DrawString(fontJetset, countGood.ToString(), posGood, Color.Green, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
+            spriteBatch.DrawString(fontJetset, countBreak.ToString(), posBreak, Color.Red, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
+            spriteBatch.DrawString(fontJetset, maxChain.ToString(), posMax, Color.Black, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
+            spriteBatch.DrawString(fontJetset, accuracyFormatted.ToString(), posAccu, Color.Black, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
             character.Draw( spriteBatch );
             spriteBatch.End();
         }

@@ -40,7 +40,7 @@ namespace ProjectRhythm.GameStates
 
         public override void LoadContent(ContentManager content)
         {
-            Background = content.Load<Texture2D>("TitleScreenPlaceholder");
+            Background = content.Load<Texture2D>("TitleScreen");
             TextureCharacterIdle = content.Load<Texture2D>("Characters/Rayo/Rayo");
             TextureCharacterTalk1 = content.Load<Texture2D>("Characters/Rayo/RayoTalk1");
             TextureCharacterTalk2 = content.Load<Texture2D>("Characters/Rayo/RayoTalk2");

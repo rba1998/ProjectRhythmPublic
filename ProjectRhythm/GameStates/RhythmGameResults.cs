@@ -12,6 +12,8 @@ using FireSharp.Config;
 using FireSharp.Response;
 using FireSharp.Interfaces;
 using ProjectRhythm.Objects.UI;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ProjectRhythm.GameStates
 {
@@ -23,6 +25,8 @@ namespace ProjectRhythm.GameStates
         SpriteFont fontJetset;
         KeyboardState previousKeyboardState;
         WindowText windowText;
+        Song song;
+        AlbumArt albumart;
 
         /*** Display Stats ***/
         int countPerfect;
@@ -51,11 +55,18 @@ namespace ProjectRhythm.GameStates
         };
         IFirebaseClient client;
 
-        public RhythmGameResults(GraphicsDevice graphicsDevice, Game g, RhythmGame rg) : base(graphicsDevice, g)
+        public RhythmGameResults(GraphicsDevice graphicsDevice, Game g, RhythmGame rg, AlbumArt art) : base(graphicsDevice, g)
         {
             this.graphicsDevice = graphicsDevice;
             game = g;
             rhythmgame = rg;
+
+            // Bring in Album Artwork to display
+            albumart = art;
+            albumart.Bounds.Width *= 2;
+            albumart.Bounds.Height *= 2;
+            albumart.Bounds.X = ( g.graphics.PreferredBackBufferWidth / 2 ) - ( albumart.Bounds.Width / 2 );
+            albumart.Bounds.Y = ( g.graphics.PreferredBackBufferHeight / 2 ) - ( albumart.Bounds.Height / 2 );
 
             countPerfect = rhythmgame.countPerfect;
             countGood = rhythmgame.countGood;
@@ -86,6 +97,10 @@ namespace ProjectRhythm.GameStates
             TextureCharacterTalk2 = content.Load<Texture2D>("Characters/Rayo/RayoTalk2");
             TextureWindow = content.Load<Texture2D>("Textures/UI/Window1Anim");
             fontJetset = content.Load<SpriteFont>("Fonts/JetSet");
+
+            song = content.Load<Song>("Music/Menu/result_bgm");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(song);
 
             character = new Character(TextureCharacterIdle, TextureCharacterTalk1, TextureCharacterTalk2, TextureWindow, fontJetset, 1000, -100);
 
@@ -182,10 +197,13 @@ namespace ProjectRhythm.GameStates
 
             if (KeyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
             {
+                MediaPlayer.IsRepeating = false;
+                MediaPlayer.Stop();
                 GameStateManager.Instance.ChangeScreen(new TitleScreen(graphicsDevice, game));
             }
 
             character.Update();
+            albumart.Update();
 
             if ( windowText != null )
             {
@@ -207,6 +225,7 @@ namespace ProjectRhythm.GameStates
             spriteBatch.DrawString(fontJetset, maxChain.ToString(), posMax, Color.Black, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
             spriteBatch.DrawString(fontJetset, accuracyFormatted.ToString(), posAccu, Color.Black, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
             character.Draw( spriteBatch );
+            albumart.Draw( spriteBatch );
             if (windowText != null)
             {
                 windowText.Draw(spriteBatch);

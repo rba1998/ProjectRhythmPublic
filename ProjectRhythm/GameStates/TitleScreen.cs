@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using ProjectRhythm.Objects;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace ProjectRhythm.GameStates
         Game game;
         GraphicsDevice graphicsDevice;
         KeyboardState previousKeyboardState;
+        Song song;
 
         Texture2D Background;
         Texture2D TextureCharacterIdle;
@@ -49,6 +51,10 @@ namespace ProjectRhythm.GameStates
 
             character = new Character( TextureCharacterIdle, TextureCharacterTalk1, TextureCharacterTalk2, TextureWindow, fontJetset, -100, -100 );
             character.Talk("Welcome to Project Rhythm, pilot!\nMy name is Rayo, and I'll be your navigator!", 180);
+
+            song = content.Load<Song>("Music/Menu/sel_bgm");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(song);
         }
 
         public override void UnloadContent()
@@ -63,6 +69,8 @@ namespace ProjectRhythm.GameStates
             if ( KeyboardState.IsKeyDown( Keys.Enter ) && !previousKeyboardState.IsKeyDown( Keys.Enter ) )
             {
                 //GameStateManager.Instance.ChangeScreen( new ScreenSignIn( graphicsDevice, game ) );
+                MediaPlayer.IsRepeating = false;
+                MediaPlayer.Stop();
                 GameStateManager.Instance.ChangeScreen( new RhythmGame( graphicsDevice, game, "Body F10ating in the Zero Gravity Space" ) );
             }
 

@@ -98,6 +98,18 @@
 /processorParam:Quality=Best
 /build:Music/Freedom Dive.mp3
 
+#begin Music/Menu/result_bgm.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Menu/result_bgm.mp3
+
+#begin Music/Menu/sel_bgm.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Menu/sel_bgm.mp3
+
 #begin Results Screen 2.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -121,6 +133,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Results Screen.png;ResultsScreenPlaceholder.png
+
+#begin sfx/normal-hitclap.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sfx/normal-hitclap.wav
 
 #begin TestNote.png
 /importer:TextureImporter

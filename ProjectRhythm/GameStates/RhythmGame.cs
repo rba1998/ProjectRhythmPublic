@@ -21,7 +21,7 @@ namespace ProjectRhythm.GameStates
         /**** Objects and Object Holders ****/
         Overlay overlay;
         Song song;
-        SoundEffect metronome;
+        SoundEffect hitsound;
         List<Note> listnote;
         List<Note> listnote_active;
         System.IO.StreamReader file;
@@ -184,7 +184,7 @@ namespace ProjectRhythm.GameStates
             albumart = new AlbumArt(txtAlbumArt, 10, 10);
 
             // Load SFX
-            metronome = content.Load<SoundEffect>( "Metronome" );
+            hitsound = content.Load<SoundEffect>( "sfx/normal-hitclap" );
 
             // Load Fonts
             fontJetset = content.Load<SpriteFont>( "Fonts/JetSet" );
@@ -249,7 +249,7 @@ namespace ProjectRhythm.GameStates
                 if (timerBeat >= framesPerBeat)
                 {
                     if (enableMetronome)
-                        metronome.Play();
+                        hitsound.Play();
                     timerBeat -= framesPerBeat;
                 }
                 timerBeat++;
@@ -336,7 +336,7 @@ namespace ProjectRhythm.GameStates
                     }
 
                     MediaPlayer.Stop();
-                    GameStateManager.Instance.ChangeScreen(new RhythmGameResults(graphicsDevice, game, this));
+                    GameStateManager.Instance.ChangeScreen(new RhythmGameResults(graphicsDevice, game, this, albumart));
                 }
                 else
                 {
@@ -402,10 +402,10 @@ namespace ProjectRhythm.GameStates
             }
 
             /**** Debug Text ****/
-            //spriteBatch.DrawString( fontJetset, MediaPlayer.PlayPosition.ToString(), new Vector2( 10, 10 ), Color.White );
-            //spriteBatch.DrawString( fontJetset, framecount.ToString(), new Vector2( 10, 30 ), Color.White );
-            //spriteBatch.DrawString( fontJetset, "BPM = " + bpm.ToString(), new Vector2( 10, 50 ), Color.White );
-            //spriteBatch.DrawString( fontJetset, "Offset = " + offset.ToString(), new Vector2( 10, 70 ), Color.White );
+            //spriteBatch.DrawString(fontJetset, MediaPlayer.PlayPosition.ToString(), new Vector2(10, 10), Color.White);
+            //spriteBatch.DrawString(fontJetset, framecount.ToString(), new Vector2(10, 30), Color.White);
+            //spriteBatch.DrawString(fontJetset, "BPM = " + bpm.ToString(), new Vector2(10, 50), Color.White);
+            //spriteBatch.DrawString(fontJetset, "Offset = " + offset.ToString(), new Vector2(10, 70), Color.White);
             //spriteBatch.DrawString( fontJetset, "Beats Per Sec = " + beatsPerSec.ToString(), new Vector2( 10, 90 ), Color.White );
             //spriteBatch.DrawString( fontJetset, "Frames Per Beat = " + framesPerBeat.ToString(), new Vector2( 10, 110 ), Color.White );
             //spriteBatch.DrawString( fontJetset, "Line 4 = " + linetest, new Vector2( 10, 150 ), Color.White );
@@ -434,7 +434,15 @@ namespace ProjectRhythm.GameStates
                     // Read in rest of the notes
                     while ((line = file.ReadLine()) != null)
                     {
-                        linetest = line;
+                        if ( line == "" )
+                        {
+                            continue;
+                        }
+                        else if ( line[ 0 ] == '/' )
+                        {
+                            continue;
+                        }
+
                         splitline = line.Split(';');
 
                         UInt64 hitframe = Convert.ToUInt64((Convert.ToDouble(splitline[1]) * framesPerBeat) + offset);
@@ -523,7 +531,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 1.0f;
                                     countPerfect++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     notehits.Add( new NoteHitEffect( txtNoteHit, 534, 795 ) );
                                     listnote_active.RemoveAt( i );
                                     break;
@@ -539,7 +547,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 0.5f;
                                     countGood++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     listnote_active.RemoveAt( i );
                                     break;
                                 }
@@ -562,7 +570,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 1.0f;
                                     countPerfect++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     notehits.Add(new NoteHitEffect(txtNoteHit, 651, 795));
                                     listnote_active.RemoveAt(i);
                                     break;
@@ -578,7 +586,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 0.5f;
                                     countGood++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     listnote_active.RemoveAt(i);
                                     break;
                                 }
@@ -601,7 +609,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 1.0f;
                                     countPerfect++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     notehits.Add(new NoteHitEffect(txtNoteHit, 768, 795));
                                     listnote_active.RemoveAt(i);
                                     break;
@@ -617,7 +625,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 0.5f;
                                     countGood++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     listnote_active.RemoveAt(i);
                                     break;
                                 }
@@ -640,7 +648,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 1.0f;
                                     countPerfect++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     notehits.Add(new NoteHitEffect(txtNoteHit, 885, 795));
                                     listnote_active.RemoveAt(i);
                                     break;
@@ -656,7 +664,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 0.5f;
                                     countGood++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     listnote_active.RemoveAt(i);
                                     break;
                                 }
@@ -679,7 +687,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 1.0f;
                                     countPerfect++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     notehits.Add(new NoteHitEffect(txtNoteHit, 1002, 795));
                                     listnote_active.RemoveAt(i);
                                     break;
@@ -695,7 +703,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 0.5f;
                                     countGood++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     listnote_active.RemoveAt(i);
                                     break;
                                 }
@@ -718,7 +726,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 1.0f;
                                     countPerfect++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     notehits.Add(new NoteHitEffect(txtNoteHit, 1119, 795));
                                     listnote_active.RemoveAt(i);
                                     break;
@@ -734,7 +742,7 @@ namespace ProjectRhythm.GameStates
                                     hitNoteCount += 0.5f;
                                     countGood++;
 
-                                    metronome.Play();
+                                    hitsound.Play();
                                     listnote_active.RemoveAt(i);
                                     break;
                                 }

@@ -11,7 +11,7 @@ namespace ProjectRhythm.Objects
     class AlbumArt
     {
         Texture2D art;
-        BoundingRectangle Bounds;
+        public BoundingRectangle Bounds;
 
         public AlbumArt( Texture2D t, float x, float y )
         {

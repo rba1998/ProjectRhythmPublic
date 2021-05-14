@@ -27,12 +27,15 @@ namespace ProjectRhythm.GameStates
         System.IO.StreamReader file;
         List<WidgetButton> listbutton;
         List<NoteHitEffect> notehits;
+        AlbumArt albumart;
 
         /**** Instance Variables ****/
         UInt64 framecount;
         public const int JudgeLineDistance = 993;
         public string mapname;
         public string songname;
+        public string albumname;
+        public string artistname;
         public float bpm;
         public float offset;
         public float beatsPerSec;
@@ -74,6 +77,7 @@ namespace ProjectRhythm.GameStates
         Texture2D txtNote;
         Texture2D txtOverlay;
         Texture2D txtNoteHit;
+        Texture2D txtAlbumArt;
 
         /****  Fonts   ****/
         SpriteFont fontJetset;
@@ -95,10 +99,16 @@ namespace ProjectRhythm.GameStates
                 string line;
                 string[] splitline;
 
-                // Get song name, bpm, and offset (first 3 lines of map)
+                // Get song name, album name, artist name, bpm, and offset (first 5 lines of map)
                 line = file.ReadLine(); // Song Name
                 splitline = line.Split('\n');
                 songname = splitline[0];
+
+                line = file.ReadLine(); // Album Name
+                albumname = line;
+
+                line = file.ReadLine(); // Artist Name
+                artistname = line;
 
                 line = file.ReadLine(); // BPM
                 bpm = float.Parse( line );
@@ -154,6 +164,24 @@ namespace ProjectRhythm.GameStates
             /**** Load Assets ****/
             // Load Song
             song = content.Load<Song>( "Music/" + songname );
+
+            // Load Album Art
+            if (albumname != "n/a")
+            {
+                try
+                {
+                    txtAlbumArt = content.Load<Texture2D>("Textures/Album Art/" + albumname);
+                }
+                catch
+                {
+                    txtAlbumArt = content.Load<Texture2D>("Textures/Album Art/defaultalbumart");
+                }
+            }
+            else
+            {
+                txtAlbumArt = content.Load<Texture2D>("Textures/Album Art/defaultalbumart");
+            }
+            albumart = new AlbumArt(txtAlbumArt, 10, 10);
 
             // Load SFX
             metronome = content.Load<SoundEffect>( "Metronome" );
@@ -229,6 +257,9 @@ namespace ProjectRhythm.GameStates
 
             // Update Overlay
             overlay.Update( gameTime );
+
+            // Update Album Art
+            albumart.Update();
 
             // Update Idle Notes
             for ( i = 0; i < listnote.Count; i++ )
@@ -330,6 +361,11 @@ namespace ProjectRhythm.GameStates
             // Draw Overlay
             overlay.Draw(spriteBatch);
 
+            // Draw Album Art and information
+            albumart.Draw(spriteBatch);
+            spriteBatch.DrawString(fontJetset, songname, new Vector2(10, 270), Color.White);
+            spriteBatch.DrawString(fontJetset, artistname, new Vector2(10, 290), Color.White);
+
             // Draw Overlay widgets
             for ( i = 0; i < listbutton.Count; i++ )
             {
@@ -366,14 +402,13 @@ namespace ProjectRhythm.GameStates
             }
 
             /**** Debug Text ****/
-            spriteBatch.DrawString( fontJetset, MediaPlayer.PlayPosition.ToString(), new Vector2( 10, 10 ), Color.White );
-            spriteBatch.DrawString( fontJetset, framecount.ToString(), new Vector2( 10, 30 ), Color.White );
-            spriteBatch.DrawString( fontJetset, "BPM = " + bpm.ToString(), new Vector2( 10, 50 ), Color.White );
-            spriteBatch.DrawString( fontJetset, "Offset = " + offset.ToString(), new Vector2( 10, 70 ), Color.White );
-            spriteBatch.DrawString( fontJetset, "Beats Per Sec = " + beatsPerSec.ToString(), new Vector2( 10, 90 ), Color.White );
-            spriteBatch.DrawString( fontJetset, "Frames Per Beat = " + framesPerBeat.ToString(), new Vector2( 10, 110 ), Color.White );
-            spriteBatch.DrawString( fontJetset, "Song name = " + songname, new Vector2( 10, 130 ), Color.White );
-            spriteBatch.DrawString( fontJetset, "Line 4 = " + linetest, new Vector2( 10, 150 ), Color.White );
+            //spriteBatch.DrawString( fontJetset, MediaPlayer.PlayPosition.ToString(), new Vector2( 10, 10 ), Color.White );
+            //spriteBatch.DrawString( fontJetset, framecount.ToString(), new Vector2( 10, 30 ), Color.White );
+            //spriteBatch.DrawString( fontJetset, "BPM = " + bpm.ToString(), new Vector2( 10, 50 ), Color.White );
+            //spriteBatch.DrawString( fontJetset, "Offset = " + offset.ToString(), new Vector2( 10, 70 ), Color.White );
+            //spriteBatch.DrawString( fontJetset, "Beats Per Sec = " + beatsPerSec.ToString(), new Vector2( 10, 90 ), Color.White );
+            //spriteBatch.DrawString( fontJetset, "Frames Per Beat = " + framesPerBeat.ToString(), new Vector2( 10, 110 ), Color.White );
+            //spriteBatch.DrawString( fontJetset, "Line 4 = " + linetest, new Vector2( 10, 150 ), Color.White );
 
             // Draw sprites here
             spriteBatch.End();
@@ -389,7 +424,9 @@ namespace ProjectRhythm.GameStates
                     string line;
                     string[] splitline;
 
-                    // Skip first 3 lines
+                    // Skip first 5 lines (that's just the metadata we already read in)
+                    file.ReadLine();
+                    file.ReadLine();
                     file.ReadLine();
                     file.ReadLine();
                     file.ReadLine();

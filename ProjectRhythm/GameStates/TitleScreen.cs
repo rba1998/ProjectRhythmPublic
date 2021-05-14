@@ -62,7 +62,8 @@ namespace ProjectRhythm.GameStates
 
             if ( KeyboardState.IsKeyDown( Keys.Enter ) && !previousKeyboardState.IsKeyDown( Keys.Enter ) )
             {
-                GameStateManager.Instance.ChangeScreen( new ScreenSignIn( graphicsDevice, game ) );
+                //GameStateManager.Instance.ChangeScreen( new ScreenSignIn( graphicsDevice, game ) );
+                GameStateManager.Instance.ChangeScreen( new RhythmGame( graphicsDevice, game, "Body F10ating in the Zero Gravity Space" ) );
             }
 
             character.Update();

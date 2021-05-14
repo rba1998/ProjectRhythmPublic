@@ -66,6 +66,7 @@
     <Compile Include="GameStates\ScreenSignInForm.cs" />
     <Compile Include="GameStates\ScreenSignIn.cs" />
     <Compile Include="GameStates\TitleScreen.cs" />
+    <Compile Include="Objects\AlbumArt.cs" />
     <Compile Include="Objects\Character.cs" />
     <Compile Include="Objects\Note.cs" />
     <Compile Include="Objects\NoteHitEffect.cs" />
@@ -115,6 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="Maps\Body F10ating in the Zero Gravity Space.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Maps\Freedom Dive.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -86,6 +86,12 @@
 /processorParam:Quality=Best
 /build:Metronome.wav
 
+#begin Music/01 Body F10ating in the Zero Gravity Space.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/01 Body F10ating in the Zero Gravity Space.mp3;Music/Body F10ating in the Zero Gravity Space.mp3
+
 #begin Music/Freedom Dive.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
@@ -151,6 +157,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:TestOverlay2.png
+
+#begin Textures/Album Art/defaultalbumart.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Album Art/defaultalbumart.jpg
+
+#begin Textures/Album Art/Tera IO.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Album Art/Tera IO.jpg
 
 #begin Textures/NoteHit.png
 /importer:TextureImporter

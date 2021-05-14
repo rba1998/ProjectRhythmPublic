@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ProjectRhythm.GameStates
 {
-    class ScreenSignIn : GameState
+    class ScreenSignInForm : GameState
     {
         Texture2D Background;
         Game game;
@@ -20,9 +20,8 @@ namespace ProjectRhythm.GameStates
 
         Texture2D textureWindow1;
 
-        WindowCreateOrSignIn window1;
 
-        public ScreenSignIn(GraphicsDevice graphicsDevice, Game g) : base(graphicsDevice, g)
+        public ScreenSignInForm(GraphicsDevice graphicsDevice, Game g) : base(graphicsDevice, g)
         {
             this.graphicsDevice = graphicsDevice;
             game = g;
@@ -38,9 +37,9 @@ namespace ProjectRhythm.GameStates
         public override void LoadContent(ContentManager content)
         {
             textureWindow1 = content.Load<Texture2D>("Textures/UI/Window1Anim");
-            window1 = new WindowCreateOrSignIn(game, textureWindow1);
+            //window1 = new WindowCreateOrSignIn(game, textureWindow1);
 
-            window1.LoadContent( content );
+            //window1.LoadContent( content );
         }
 
         public override void UnloadContent()
@@ -54,17 +53,10 @@ namespace ProjectRhythm.GameStates
 
             if (KeyboardState.IsKeyDown(Keys.Enter) && !previousKeyboardState.IsKeyDown(Keys.Enter))
             {
-                if (window1.buttonCreate.Selected)
-                {
-                    GameStateManager.Instance.ChangeScreen(new RhythmGame(graphicsDevice, game, "Freedom Dive"));
-                }
-                else if ( window1.buttonSignin.Selected )
-                {
-                    GameStateManager.Instance.ChangeScreen(new ScreenSignInForm(graphicsDevice, game));
-                }
+                GameStateManager.Instance.ChangeScreen(new RhythmGame(graphicsDevice, game, "Freedom Dive"));
             }
 
-            window1.Update(gameTime);
+            //window1.Update(gameTime);
 
             previousKeyboardState = KeyboardState;
         }
@@ -75,7 +67,7 @@ namespace ProjectRhythm.GameStates
 
             spriteBatch.Begin();
 
-            window1.Draw(spriteBatch);
+            //window1.Draw(spriteBatch);
 
             spriteBatch.End();
         }

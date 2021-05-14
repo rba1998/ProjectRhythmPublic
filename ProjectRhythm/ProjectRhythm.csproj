@@ -63,6 +63,7 @@
     <Compile Include="GameStates\IGameState.cs" />
     <Compile Include="GameStates\RhythmGame.cs" />
     <Compile Include="GameStates\RhythmGameResults.cs" />
+    <Compile Include="GameStates\ScreenSignInForm.cs" />
     <Compile Include="GameStates\ScreenSignIn.cs" />
     <Compile Include="GameStates\TitleScreen.cs" />
     <Compile Include="Objects\Character.cs" />

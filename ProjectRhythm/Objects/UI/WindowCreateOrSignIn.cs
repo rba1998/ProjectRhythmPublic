@@ -19,8 +19,8 @@ namespace ProjectRhythm.Objects.UI
         private Rectangle sheetlocation;
 
         private bool AnimationDone;
-        private ButtonCreateOrSignInWindow buttonCreate;
-        private ButtonCreateOrSignInWindow buttonSignin;
+        public ButtonCreateOrSignInWindow buttonCreate;
+        public ButtonCreateOrSignInWindow buttonSignin;
 
         KeyboardState previousKeyboardState;
 

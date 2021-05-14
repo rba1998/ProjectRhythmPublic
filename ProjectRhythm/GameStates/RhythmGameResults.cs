@@ -8,6 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FireSharp.Config;
+using FireSharp.Response;
+using FireSharp.Interfaces;
+using ProjectRhythm.Objects.UI;
 
 namespace ProjectRhythm.GameStates
 {
@@ -18,6 +22,7 @@ namespace ProjectRhythm.GameStates
         RhythmGame rhythmgame;
         SpriteFont fontJetset;
         KeyboardState previousKeyboardState;
+        WindowText windowText;
 
         /*** Display Stats ***/
         int countPerfect;
@@ -37,6 +42,14 @@ namespace ProjectRhythm.GameStates
         Texture2D TextureWindow;
 
         Character character;
+
+        /*** Firebase ***/
+        IFirebaseConfig fcon = new FirebaseConfig()
+        {
+            AuthSecret = "5xoe8BN7OjEJ1pSTEzyrUHwKgUeKllHGgEIfYyTA",
+            BasePath = "https://project-rhythm-3893d-default-rtdb.firebaseio.com/"
+        };
+        IFirebaseClient client;
 
         public RhythmGameResults(GraphicsDevice graphicsDevice, Game g, RhythmGame rg) : base(graphicsDevice, g)
         {
@@ -76,33 +89,85 @@ namespace ProjectRhythm.GameStates
 
             character = new Character(TextureCharacterIdle, TextureCharacterTalk1, TextureCharacterTalk2, TextureWindow, fontJetset, 1000, -100);
 
-            if ( countBreak == 0 && accuracy >= 100.0f )
+            UInt64 globalpoints = 0; // Earned points that will be added to the global total.
+            string charactermessage;
+
+            if ( countBreak == 0 && accuracy >= 100.0f ) // X RANK
             {
-                character.Talk("I... I don't know what to say...\nYou cleared the song with a completely\nperfect rating!\nIt really doesn't get better than that!", 360);
+                charactermessage = "I... I don't know what to say...\nYou cleared the song with a completely\nperfect rating!\nIt really doesn't get better than that!";
+                globalpoints += 5;
             }
-            else if ( countBreak == 0 )
+            else if ( accuracy >= 95.0f ) // S RANK
             {
-                character.Talk("Amazing! you got a full chain!\nYou're a really skilled performer!\nUm... would you show me again sometime?", 360);
+                charactermessage = "Wow! You're super accurate!\nYou have an amazing sense of rhythm!";
+                globalpoints += 3;
             }
-            else if ( accuracy >= 95.0f )
+            else if ( accuracy >= 90.0f ) // A RANK
             {
-                character.Talk("Wow! You're super accurate!\nYou have an amazing sense of rhythm!", 360);
+                charactermessage = "You played really well, that was great!\nI always enjoy performing with you!";
+                globalpoints += 2;
             }
-            else if ( accuracy >= 90.0f )
+            else if ( accuracy >= 80.0f ) // B RANK
             {
-                character.Talk("You played really well, that was great!\nI always enjoy performing with you!", 360);
+                charactermessage = "Nice one! That was a solid performance.\nI'm excited to see what you play next!";
+                globalpoints += 1;
             }
-            else if ( accuracy >= 80.0f )
+            else if ( accuracy >= 70.0f ) // C RANK
             {
-                character.Talk("Nice one! That was a solid performance.\nI'm excited to see what you play next!", 360);
+                charactermessage = "Woah, just made it!\nThat one was hard, but you got through!\nI never gave up hope!";
+                globalpoints += 1;
             }
-            else if ( accuracy >= 70.0f )
+            else // D RANMK
             {
-                character.Talk("Woah, just made it!\nThat one was hard, but you got through!\nI never gave up hope!", 360);
+                charactermessage = "Oops... that's okay though.\nGive it another shot, you can do it!";
+                globalpoints = 0;
             }
-            else
+
+            if (countBreak == 0 && accuracy < 100.0f) // MAX CHAIN
             {
-                character.Talk("Oops... that's okay though.\nGive it another shot, you can do it!", 360);
+                charactermessage = "Amazing! you got a full chain!\nYou're a really skilled performer!\nUm... would you show me again sometime?";
+                globalpoints += 1;
+            }
+
+            character.Talk(charactermessage, 360);
+
+            // Try connecting to Firebase server
+            try
+            {
+                client = new FireSharp.FirebaseClient(fcon);
+                windowText = new WindowText(TextureWindow, fontJetset, "\nCommunicating with server...", 744, 100);
+
+                // Get the current amount of global points
+                var getter = client.Get("GlobalData/Total Points");
+                UInt64 currenttotal = getter.ResultAs<UInt64>();
+                windowText = new WindowText(TextureWindow, fontJetset, "\nData get successful.", 744, 100);
+
+                // Add the amount of points the user scored this game
+                UInt64 newtotal = currenttotal + globalpoints;
+
+                // Set the global points to the newly updated value
+                var setter = client.Set("GlobalData/Total Points", newtotal);
+
+                if (globalpoints > 0)
+                {
+                    windowText = new WindowText(TextureWindow, fontJetset, "You earned " + globalpoints + " points this round.\n" +
+                                                                           "Global total: " + newtotal + "\n" +
+                                                                           "Thank you for your contribution, pilot.\n" +
+                                                                           "We look forward to all of your hard work.\n" +
+                                                                           "--Mission Control", 744, 100);
+                }
+                else if ( globalpoints == 0 )
+                {
+                    windowText = new WindowText(TextureWindow, fontJetset, "You earned " + globalpoints + " points this round.\n" +
+                                                                           "Global total: " + newtotal + "\n" +
+                                                                           "Keep practicing, pilot. We know you can do it.\n" +
+                                                                           "We look forward to all of your hard work.\n" +
+                                                                           "--Mission Control", 744, 100);
+                }
+            }
+            catch
+            {
+                windowText = new WindowText( TextureWindow, fontJetset, "Error connecting to server.", 744, 100 );
             }
         }
 
@@ -122,6 +187,11 @@ namespace ProjectRhythm.GameStates
 
             character.Update();
 
+            if ( windowText != null )
+            {
+                windowText.Update();
+            }
+
             previousKeyboardState = KeyboardState;
         }
 
@@ -137,6 +207,10 @@ namespace ProjectRhythm.GameStates
             spriteBatch.DrawString(fontJetset, maxChain.ToString(), posMax, Color.Black, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
             spriteBatch.DrawString(fontJetset, accuracyFormatted.ToString(), posAccu, Color.Black, 0.0f, new Vector2(0, 0), 2.0f, new SpriteEffects(), 1);
             character.Draw( spriteBatch );
+            if (windowText != null)
+            {
+                windowText.Draw(spriteBatch);
+            }
             spriteBatch.End();
         }
     }
